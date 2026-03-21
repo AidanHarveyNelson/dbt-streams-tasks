@@ -17,6 +17,24 @@ models:
         name: "transform_from_stream_test"
         description: "Task for the customers table"
         when: "SYSTEM$STREAM_HAS_DATA('stream_from_source_test')"
-        schedule: "5 MINUTES"
+        schedule: "1 MINUTES"
     columns:
       - name: id
+  
+  - name: stream_from_ref
+    config:
+      materialized: stream_task
+      unique_key:
+        - id
+      stream:
+        name: "stream_from_ref_test"
+        description: "Stream for the customers table"
+        tags:
+          - customers
+        copy_grants: True
+        append_only: False
+      task:
+        name: "transform_from_ref_test"
+        description: "Task for the customers table"
+        when: "SYSTEM$STREAM_HAS_DATA('stream_from_ref_test')"
+        schedule: "1 MINUTES"

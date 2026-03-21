@@ -32,20 +32,26 @@
 -- Run Pre-Hooks
 {{- run_hooks(pre_hooks) -}}
 
-{%- do log('Build SQL: ' ~ build_sql, info = true) -%}
-
 {%- call statement('main') -%}
     {%- do log('Creating Objects for Relation: ' ~ target_relation ~ '\n' ~ sql, info = true) -%}
     {%- set stream_target_config = config.get('src_table') -%}
     {%- do log('Logging Stream Target Config: ' ~ stream_target_config, info = true) -%}
-    {%- set stream_target = source(stream_target_config.source_name, stream_target_config.model_name) -%}
-    {%- do log('Logging Stream Target: ' ~ stream_target, info = true) -%}
+
+    {%- if stream_target_config.model_type == 'source' -%}
+        {%- set stream_source = load_relation(source(stream_target_config.source_name, stream_target_config.model_name)) -%}
+    {%- else -%}
+        {%- set stream_source = load_relation(ref(stream_target_config.model_name)) -%}
+    {%- endif -%}
+
+    {%- set stream_name = config.require('stream').name -%}
+
+    {%- do log('Logging Stream Source: ' ~ stream_source, info = true) -%}
     {%- call statement('create_tmp_relation') -%}
         {{- snowflake__create_view_as_with_temp_flag(tmp_relation, sql, True) -}}
     {%- endcall -%}
-    {%- set stream_query = dbt_snowflake_streams_tasks.create_stream(stream_target) -%}
+    {%- set stream_query = dbt_snowflake_streams_tasks.create_stream(stream_source) -%}
     {%- do log('Logging Stream Query: ' ~ stream_query, info = true) -%}
-    {%- set task_query = dbt_snowflake_streams_tasks.create_task(stream_target, target_relation, sql, tmp_relation, unique_key) -%}
+    {%- set task_query = dbt_snowflake_streams_tasks.create_task(stream_name, target_relation, sql, tmp_relation, unique_key) -%}
     {%- do log('Logging Task Query: ' ~ task_query, info = true) -%}
     {%- set table_query = dbt_snowflake_streams_tasks.create_table(target_relation, sql, tmp_relation, is_new) -%}
     {%- do log('Logging Table Query: ' ~ table_query, info = true) -%}
