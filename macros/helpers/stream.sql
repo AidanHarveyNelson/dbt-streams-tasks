@@ -1,9 +1,9 @@
 {%- macro stream_source(source_name, table_name) -%}
-    {{ dbt_snowflake_streams_tasks.stream('source', source_name, table_name) }}
+    {{ dbt_streams_tasks.stream('source', source_name, table_name) }}
 {%- endmacro -%}
 
 {%- macro stream_ref(model_name) -%}
-    {{ dbt_snowflake_streams_tasks.stream('model', none, model_name) }}
+    {{ dbt_streams_tasks.stream('model', none, model_name) }}
 {%- endmacro -%}
 
 

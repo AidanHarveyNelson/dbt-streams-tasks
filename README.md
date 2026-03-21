@@ -35,7 +35,7 @@ select
     name,
     email,
     created_at
-from {{ dbt_snowflake_streams_tasks.stream_ref('upstream_model') }}
+from {{ dbt_streams_tasks.stream_ref('upstream_model') }}
 ```
 
 Or from a source:
@@ -43,7 +43,7 @@ Or from a source:
 ```sql
 -- models/my_model.sql
 select *
-from {{ dbt_snowflake_streams_tasks.stream_source('my_source', 'my_table') }}
+from {{ dbt_streams_tasks.stream_source('my_source', 'my_table') }}
 ```
 
 ### 2. Configure the Model

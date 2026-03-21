@@ -74,21 +74,21 @@
     Step 3: Create or alter the target table
 #}
 {%- call statement('create_table') -%}
-    {{ dbt_snowflake_streams_tasks.create_table(target_relation, sql, tmp_relation, is_new) }}
+    {{ dbt_streams_tasks.create_table(target_relation, sql, tmp_relation, is_new) }}
 {%- endcall -%}
 
 {#
     Step 4: Create the stream on the source table/view
 #}
 {%- call statement('create_stream') -%}
-    {{ dbt_snowflake_streams_tasks.create_stream(stream_source_relation) }}
+    {{ dbt_streams_tasks.create_stream(stream_source_relation) }}
 {%- endcall -%}
 
 {#
     Step 5: Create the task with a MERGE statement
 #}
 {%- call statement('create_task') -%}
-    {{ dbt_snowflake_streams_tasks.create_task(stream_name, target_relation, sql, tmp_relation, unique_key) }}
+    {{ dbt_streams_tasks.create_task(stream_name, target_relation, sql, tmp_relation, unique_key) }}
 {%- endcall -%}
 
 {#
