@@ -29,3 +29,10 @@ echo "=== Running data tests (verifying stream data was merged) ==="
 uv run dbt test
 
 echo "=== All integration tests passed ==="
+
+echo "=== Do you want to clean up test resources? ==="
+
+read -p "Type 'yes' to clean up Snowflake tables, streams, and tasks created by the tests: " -r
+if [[ $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
+    echo "Cleaning up test resources..."
+    uv run dbt run-operation cleanup
