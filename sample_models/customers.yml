@@ -1,46 +1,28 @@
 version: 2
 
 models:
-  - name: customers_final
+  - name: customers
     description: "This is a transformed model for testing purposes"
-    materialized: stream_task
-    unique_key: "id"
-    streams:
-      # Stream object maps to the attribute in the SQL query
-      customers:
-        # Required
+    config:
+      materialized: stream_task
+      unique_key:
+        - id
+      stream:
         name: "customers_stream_test"
-        # Optional
         description: "Stream for the customers table"
-        tags:
-          - customers
-        copy_grants: False
-        append_only: True
-    task:
-      # Required
-      name: "customers_task_test"
-      # Optional
-      description: "Task for the customers table"
-      warehouse: "my_warehouse"
-      schedule: "1 HOUR"
-      execute_as_user: "my_user"
-      when: "SYSTEM$STREAM_HAS_DATA"
-      allow_overlapping_execution: False
-      user_task_timeout_ms: 100
-      suspend_task_after_num_failures: 3
-      error_integration: "<error_integration>"
-      success_integration: "<success_integration>"
-      log_level: "INFO"
-      finalize: "<finalize>"
-      task_auto_retry_attempts: 2
-      USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS: 60
-      TARGET_COMPLETION_INTERVAL: "1 HOUR"
-      SERVERLESS_TASK_MIN_STATEMENT_SIZE: "XSMALL"
-      SERVERLESS_TASK_MAX_STATEMENT_SIZE: "LARGE"
-      session_parameters:
-        my_param: "my_value"
-        my_test_2: "test_2"
-
+        copy_grants: false
+        append_only: true
+        show_initial_rows: true
+      task:
+        name: "customers_task_test"
+        description: "Task for the customers table"
+        warehouse: "my_warehouse"
+        schedule: "1 MINUTE"
+        when: "SYSTEM$STREAM_HAS_DATA('customers_stream_test')"
+        allow_overlapping_execution: false
+        user_task_timeout_ms: 100
+        suspend_task_after_num_failures: 3
+        task_auto_retry_attempts: 2
     columns:
       - name: id
         description: "The unique identifier for a customer"

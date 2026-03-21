@@ -8,16 +8,16 @@ models:
         - id
       stream:
         name: "stream_from_source_test"
-        description: "Stream for the customers table"
-        tags:
-          - customers
-        copy_grants: False
-        append_only: True
+        description: "Stream for the customers source table"
+        copy_grants: false
+        append_only: true
+        show_initial_rows: true
       task:
         name: "transform_from_stream_test"
-        description: "Task for the customers table"
+        description: "Task to merge stream data into stream_from_source"
+        warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
         when: "SYSTEM$STREAM_HAS_DATA('stream_from_source_test')"
-        schedule: "1 MINUTES"
+        schedule: "1 MINUTE"
     columns:
       - name: id
   
@@ -28,13 +28,13 @@ models:
         - id
       stream:
         name: "stream_from_ref_test"
-        description: "Stream for the customers table"
-        tags:
-          - customers
-        copy_grants: True
-        append_only: False
+        description: "Stream for the view_on_source view"
+        copy_grants: false
+        append_only: true
+        show_initial_rows: true
       task:
         name: "transform_from_ref_test"
-        description: "Task for the customers table"
+        description: "Task to merge stream data into stream_from_ref"
+        warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
         when: "SYSTEM$STREAM_HAS_DATA('stream_from_ref_test')"
-        schedule: "1 MINUTES"
+        schedule: "1 MINUTE"

@@ -1,5 +1,5 @@
 
-name: 'dbt_snowflake_streams_tasks_integration_tests'
+name: 'dbt_streams_tasks_integration_tests'
 version: '1.0'
 
 profile: 'integration_tests'
@@ -22,13 +22,10 @@ flags:
   use_colors: True
 
 models:
-  dbt_snowflake_streams_tasks_integration_tests:
+  dbt_streams_tasks_integration_tests:
     customers:
       +enabled: True
 
-
-
-tests:
-  dbt_snowflake_streams_tasks_integration_tests:
-    customers:
-      +enabled: True
+dispatch:
+  - macro_namespace: 'dbt_streams_tasks'
+    search_order: ['dbt_streams_tasks_integration_tests', 'dbt_streams_tasks']

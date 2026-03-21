@@ -22,9 +22,9 @@ jobs:
       with:
         # snowflake
         SNOWFLAKE_USER: ${{ vars.SNOWFLAKE_USER }}
-        SNOWFLAKE_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
         SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
         SNOWFLAKE_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
+        SNOWFLAKE_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
         SNOWFLAKE_SCHEMA: "integration_tests_snowflake_${{ github.run_number }}"
 
       secrets:
