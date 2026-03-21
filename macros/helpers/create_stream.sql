@@ -1,30 +1,24 @@
 {%- macro create_stream(source_table) -%}
-    {%- do log('Source Table is: ' ~ source_table, info = true) -%}
-    {%- set name = config.require('stream').name -%}
+    {%- do log('create_stream: source_table=' ~ source_table, info=true) -%}
+    {%- set stream_config = config.require('stream') -%}
+    {%- set name = stream_config.name -%}
+    {%- set append_only = stream_config.get('append_only', true) -%}
+    {%- set show_initial_rows = stream_config.get('show_initial_rows', true) -%}
+    {%- set copy_grants = stream_config.get('copy_grants', false) -%}
+    {%- set description = stream_config.get('description', '') -%}
 
-    {%- set run_sql -%}
-        CREATE OR REPLACE STREAM {{ name }}
-        {{ "COPY GRANTS" if config.get('stream').copy_grants else '' }}
-        {# To-Do Add Tag Config#}
-    {%- endset -%}
-
-    {% if source_table.is_view %}
-        {%- set run_sql -%}
-            {{ run_sql ~ " ON VIEW " ~ source_table }}
-            COMMENT = '{{ config.get('stream').description or '' }}'
-            APPEND_ONLY = {{ config.get('stream').append_only|upper or 'TRUE' }}
-            SHOW_INITIAL_ROWS = {{ config.get('stream').show_initial_rows|upper or 'TRUE' }}
-        {%- endset -%}
-    {% elif source_table.is_table %}
-        {%- set run_sql -%}
-            {{ run_sql ~ " ON TABLE " ~ source_table }}
-            COMMENT = '{{ config.get('stream').description or '' }}'
-            APPEND_ONLY = {{ config.get('stream').append_only|upper or 'TRUE' }}
-            SHOW_INITIAL_ROWS = {{ config.get('stream').show_initial_rows|upper or 'TRUE' }}
-        {%- endset -%}
+    {%- if source_table.is_view -%}
+        {%- set on_type = 'VIEW' -%}
+    {%- elif source_table.is_table -%}
+        {%- set on_type = 'TABLE' -%}
     {%- else -%}
-        {%- do exceptions.raise_compiler_error("Invalid materialization type provided to stream macro. Use 'view' or 'table'. Object passed in is " ~ source_table ~ " with type: " ~ source_table.type) -%}
+        {%- do exceptions.raise_compiler_error("create_stream: source must be a table or view. Got: " ~ source_table ~ " type=" ~ source_table.type) -%}
     {%- endif -%}
-    {%- do log('Creating Stream: ' ~ name, info = true) -%}
-    {{ run_sql }}
+
+    CREATE OR REPLACE STREAM {{ name }}
+    {{ "COPY GRANTS" if copy_grants else '' }}
+    ON {{ on_type }} {{ source_table }}
+    COMMENT = '{{ description }}'
+    APPEND_ONLY = {{ append_only | upper }}
+    SHOW_INITIAL_ROWS = {{ show_initial_rows | upper }}
 {%- endmacro -%}
