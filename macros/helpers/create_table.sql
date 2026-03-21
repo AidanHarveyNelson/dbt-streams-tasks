@@ -4,11 +4,11 @@
         {%- if not is_new -%}
             {% set missing_columns = adapter.get_missing_columns(target_table, tmp_relation) %}
             {% do log('Missing columns are ' ~ missing_columns, info=true)%}
-            {% if missing_columns | length > 0 %}
+            {% if missing_columns %}
                 alter table {{ target_table }}
-                {%- for col in adapter.get_missing_columns(target_table, tmp_relation) -%}
+                {% for col in missing_columns %}
                     add column "{{- col.name -}}" {{- col.data_type -}}{{- ";" if loop.last else "\n" -}}
-                {%- endfor -%}
+                {% endfor %}
             {% endif%}
         {%- else -%}
             create table {{ target_table }} as {{ sql }};
