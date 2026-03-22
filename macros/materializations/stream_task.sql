@@ -41,8 +41,8 @@
 
 {%- set stream_config = config.require('stream') -%}
 {%- set task_config = config.require('task') -%}
-{%- set stream_name = stream_config.name -%}
-{%- set task_name = task_config.name -%}
+{%- set stream_name = target_relation.database ~ '.' ~ target_relation.schema ~ '.' ~ stream_config.name -%}
+{%- set task_name = target_relation.database ~ '.' ~ target_relation.schema ~ '.' ~ task_config.name -%}
 
 {%- do log('stream_task: stream_source=' ~ stream_source_relation ~ ' stream_name=' ~ stream_name ~ ' task_name=' ~ task_name, info=true) -%}
 
@@ -74,21 +74,21 @@
     Step 3: Create or alter the target table
 #}
 {%- call statement('create_table') -%}
-    {{ dbt_streams_tasks.create_table(target_relation, sql, tmp_relation, is_new) }}
+    {{ dbt_streams_tasks.create_table(target_relation, tmp_relation, is_new) }}
 {%- endcall -%}
 
 {#
     Step 4: Create the stream on the source table/view
 #}
 {%- call statement('create_stream') -%}
-    {{ dbt_streams_tasks.create_stream(stream_source_relation) }}
+    {{ dbt_streams_tasks.create_stream(stream_source_relation, stream_name) }}
 {%- endcall -%}
 
 {#
     Step 5: Create the task with a MERGE statement
 #}
 {%- call statement('create_task') -%}
-    {{ dbt_streams_tasks.create_task(stream_name, target_relation, sql, tmp_relation, unique_key) }}
+    {{ dbt_streams_tasks.create_task(task_name, stream_name, target_relation, sql, tmp_relation, unique_key, stream_source_relation) }}
 {%- endcall -%}
 
 {#

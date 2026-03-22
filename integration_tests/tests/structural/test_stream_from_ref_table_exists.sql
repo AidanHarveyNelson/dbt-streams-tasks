@@ -5,8 +5,8 @@
 {% set query %}
     SELECT column_name
     FROM {{ target.database }}.information_schema.columns
-    WHERE table_schema = '{{ target.schema }}'
-      AND table_name = 'STREAM_FROM_REF'
+    WHERE table_schema = upper('{{ target.schema }}')
+      AND table_name = 'TABLE_FROM_REF'
     ORDER BY ordinal_position
 {% endset %}
 

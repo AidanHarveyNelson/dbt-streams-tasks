@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stream_from_source
+  - name: table_from_source
     config:
       materialized: stream_task
       unique_key:
@@ -14,27 +14,27 @@ models:
         show_initial_rows: true
       task:
         name: "transform_from_stream_test"
-        description: "Task to merge stream data into stream_from_source"
+        description: "Task to merge stream data into table_from_source"
         warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
         when: "SYSTEM$STREAM_HAS_DATA('stream_from_source_test')"
         schedule: "1 MINUTE"
     columns:
       - name: id
   
-  - name: stream_from_ref
+  - name: table_from_ref
     config:
       materialized: stream_task
       unique_key:
         - id
       stream:
         name: "stream_from_ref_test"
-        description: "Stream for the view_on_source view"
+        description: "Stream for the table_from_ref table"
         copy_grants: false
         append_only: true
         show_initial_rows: true
       task:
         name: "transform_from_ref_test"
-        description: "Task to merge stream data into stream_from_ref"
+        description: "Task to merge stream data into table_from_ref"
         warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
         when: "SYSTEM$STREAM_HAS_DATA('stream_from_ref_test')"
         schedule: "1 MINUTE"

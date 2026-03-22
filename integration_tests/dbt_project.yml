@@ -21,10 +21,14 @@ flags:
   send_anonymous_usage_stats: False
   use_colors: True
 
-models:
+tests:
   dbt_streams_tasks_integration_tests:
-    customers:
-      +enabled: True
+    structural:
+      +tags:
+        - structural
+    data:
+      +tags:
+        - data
 
 dispatch:
   - macro_namespace: 'dbt_streams_tasks'
