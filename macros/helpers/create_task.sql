@@ -1,9 +1,8 @@
-{%- macro create_task(stream, target_table, sql, tmp_relation, unique_key) -%}
+{%- macro create_task(task_name, stream, target_table, sql, tmp_relation, unique_key, stream_source_relation) -%}
     {%- set task_config = config.require('task') -%}
     {%- set stream_config = config.require('stream') -%}
-    {%- set name = task_config.name -%}
 
-    {%- do log('create_task: name=' ~ name ~ ' stream=' ~ stream ~ ' target=' ~ target_table, info=true) -%}
+    {%- do log('create_task: name=' ~ task_name ~ ' stream=' ~ stream ~ ' target=' ~ target_table, info=true) -%}
 
     {# Get columns from tmp relation, excluding stream metadata columns #}
     {%- set columns = adapter.get_columns_in_relation(tmp_relation)
@@ -12,10 +11,14 @@
         | rejectattr('name', 'equalto', 'METADATA$ROW_ID')
         | list -%}
 
+    {# Build the stream SQL by replacing the rendered source relation with the stream name #}
+    {%- set rendered_source = stream_source_relation | string | replace('"', '') | lower -%}
+    {%- set stream_sql = sql | lower | replace(rendered_source, stream) -%}
+
     {# Build the MERGE statement that the task will execute #}
     {%- set merge_sql -%}
         MERGE INTO {{ target_table }} AS TARGET
-        USING {{ stream }} AS SOURCE
+        USING ({{ stream_sql }}) AS SOURCE
         ON (
             {%- for key in unique_key %}
             TARGET.{{ key }} = SOURCE.{{ key }}{{ " AND" if not loop.last else "" }}
@@ -42,7 +45,7 @@
     {%- endset -%}
 
     {# Build task with optional parameters #}
-    CREATE OR REPLACE TASK {{ name }}
+    CREATE OR REPLACE TASK {{ task_name }}
     {%- if task_config.get('warehouse') %}
         WAREHOUSE = {{ task_config.warehouse }}
     {%- endif %}
