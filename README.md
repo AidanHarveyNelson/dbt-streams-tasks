@@ -1,4 +1,4 @@
-# dbt-snowflake-streams-tasks
+# dbt-streams-tasks
 
 A dbt package that enables creating Snowflake [streams](https://docs.snowflake.com/en/sql-reference/sql/create-stream) and [tasks](https://docs.snowflake.com/en/sql-reference/sql/create-task) through dbt, providing an alternative to incremental models that leverages Snowflake's native change data capture.
 
@@ -18,7 +18,7 @@ Add to your `packages.yml`:
 
 ```yaml
 packages:
-  - git: "https://github.com/<your-org>/dbt-snowflake-streams-tasks.git"
+  - git: "https://github.com/<your-org>/dbt-streams-tasks.git"
     revision: v0.0.1
 ```
 

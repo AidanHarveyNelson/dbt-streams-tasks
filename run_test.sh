@@ -36,3 +36,4 @@ read -p "Type 'yes' to clean up Snowflake tables, streams, and tasks created by 
 if [[ $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
     echo "Cleaning up test resources..."
     uv run dbt run-operation cleanup
+done

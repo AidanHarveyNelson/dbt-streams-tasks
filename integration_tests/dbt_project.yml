@@ -21,11 +21,6 @@ flags:
   send_anonymous_usage_stats: False
   use_colors: True
 
-models:
-  dbt_streams_tasks_integration_tests:
-    customers:
-      +enabled: True
-
 dispatch:
   - macro_namespace: 'dbt_streams_tasks'
     search_order: ['dbt_streams_tasks_integration_tests', 'dbt_streams_tasks']
