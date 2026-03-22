@@ -14,12 +14,14 @@ Once deployed, the stream and task run autonomously in Snowflake — no dbt sche
 
 ## Installation
 
-Add to your `packages.yml`:
+Currently this is waiting to be approved by the DBT team to be added into DBT Hub.
+
+For now Add to your `packages.yml`:
 
 ```yaml
 packages:
-  - git: "https://github.com/<your-org>/dbt-streams-tasks.git"
-    revision: v0.0.1
+  - git: "https://github.com/AidanHarveyNelson/dbt-streams-tasks.git"
+    revision: v0.0.3
 ```
 
 ## Usage

@@ -21,6 +21,15 @@ flags:
   send_anonymous_usage_stats: False
   use_colors: True
 
+tests:
+  dbt_streams_tasks_integration_tests:
+    structural:
+      +tags:
+        - structural
+    data:
+      +tags:
+        - data
+
 dispatch:
   - macro_namespace: 'dbt_streams_tasks'
     search_order: ['dbt_streams_tasks_integration_tests', 'dbt_streams_tasks']
